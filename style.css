@@ -29,3 +29,14 @@ body {
   justify-content: center;
   padding: 20px 0;
 }
+
+.circle {
+  fill: lightsteelblue;
+  stroke: steelblue;
+  stroke-width: 1.5px;
+}
+
+.circle--drag {
+  fill: red;
+  stroke: brown;
+}
