@@ -1,0 +1,72 @@
+body, html {
+  margin: 0;
+}
+
+body {
+  font-family: Lato, Tahoma, Helvetica, sans-serif;
+  font-size: 16px;
+}
+
+header, footer {
+  background: #2980B9;
+  color: white;
+  padding: 10px;
+  text-align: center;
+}
+
+footer {
+  font-size: .75em;
+}
+
+main {
+  display: flex;
+  justify-content: center;
+}
+
+#viz-container {
+  min-width: 700px;
+  min-height: 700px;
+  vertical-align: bottom;
+}
+
+#filter-container {
+  min-height: 700px;
+  min-width: 400px;
+  margin-right: 10px;
+}
+
+.slider-container {
+  display: inline-block;
+}
+
+#slider-b {
+  /*margin-left: 50px;*/
+  position: absolute;
+  left: 225px;
+}
+
+.filter-panel{
+  padding-bottom: 20px;
+}
+
+/* override multi-select library */
+.ms-list {
+  max-height: 100px;
+}
+
+.slider {
+  /*margin-left: 10px;*/
+  margin-right: 30px;
+}
+
+/* Visualization styling */
+.circle {
+  fill: lightsteelblue;
+  stroke: steelblue;
+  stroke-width: 1.5px;
+}
+
+.circle--drag {
+  fill: red;
+  stroke: brown;
+}

@@ -2,18 +2,80 @@
 <html>
 <head>
   <title>CS448B Assignment 3</title>
-  <link rel="stylesheet" href="style.css" />
+  <!-- <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.4/themes/smoothness/jquery-ui.css"> -->
+  <link href="css/multi-select.css" media="screen" rel="stylesheet" type="text/css" />
+  <link href="css/style.css" media="screen" rel="stylesheet" type="text/css" />
+  <link href='https://fonts.googleapis.com/css?family=Lato:400,700,300' rel='stylesheet' type='text/css'>
 </head>
 <body>
+  <!-- Import jQuery -->
+  <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.js"></script>
+  <!-- <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.4/jquery-ui.min.js"></script> -->
+
+  <!-- Import D3 -->
   <script src="https://d3js.org/d3.v3.min.js" charset="utf-8"></script>
-  <div class="header">
+
+  <header>
     <h1>
-      CS448B: Assignment 3
+      San Francisco Crime Incident Interactive Visualization
     </h1>
-    <h4>
-      Sukhi Gulati and Raymond Luong
-    </h4>
-  </div>
-  <div id="viz-container"></div>
-  <script src="viz.js"></script>
+  </header>
+
+  <main>
+
+    <div id="filter-container">
+
+      <h3>Dynamic Query Filters</h3>
+
+      <div class="filter-panel" id="filter-location">
+        <h4>Location</h4>
+        <div class="slider-container" id="slider-a">
+          <span>Pin A Radius</span>
+          <form oninput="amount.value=rangeInput.value">
+            <input type="range" id="radius-a" name="rangeInput" min="0" max="100" value="0">
+            <output name="amount" for="radius-b">0</output>
+          </form>
+        </div>
+        <div class="slider-container" id="slider-b">
+          <span>Pin B Radius</span>
+          <form oninput="amount.value=rangeInput.value">
+            <input type="range" id="radius-b" name="rangeInput" min="0" max="100" value="0">
+            <output name="amount" for="radius-b">0</output>
+          </form>
+        </div>
+      </div>
+
+      <div class="filter-panel" id="filter-category">
+        <h4>Category</h4>
+        <select multiple="multiple" id="select-category"></select>
+      </div>
+
+      <div class="filter-panel" id="filter-resolution">
+        <h4>Resolution</h4>
+        <select multiple="multiple" id="select-resolution"></select>
+      </div>
+
+      <div class="filter-panel" id="filter-time">
+        <h4>Time</h4>
+        From: <input type="time" value = "00:00" min="00:00" id="time-from">
+        to: <input type="time" value="23:59" max="23:59" id="time-to">
+        <!-- error message will be needed here for valid range -->
+        <button id="time-submit">Apply Time Filter</button>
+      </div>
+    </div>
+
+    <div id="viz-container"></div>
+
+  </main>
+
+  <footer>
+    <p>Data points from April 1 - 15, 2016</p>
+    <p>Developed by Sukhi Gulati and Raymond Luong for CS448B at Stanford University</p>
+  </footer>
+
+  <script src="js/viz.js"></script>
+  <script src="js/jquery.multi-select.js"></script>
+  <script>
+
+  </script>
 </body>
