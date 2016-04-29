@@ -47,12 +47,13 @@ d3.json('data/scpd_incidents.json', function(error, data) {
   processRawData(data);
   preloadDataToDOM();
   visualize(data);
+  addPinsToDOM(); // Add pins after data points so they appear on top (z-index doesn't affect svg)
 });
 
 // Get unique categories and districts from data
 function processRawData(data) {
   data.forEach(function(item) {
-    // Need commas to preserve uniquess and get around jQuery data attribute
+    // Need quotes to preserve uniquess and get around jQuery data attribute
 
     // Only push unique categories
     if (!categories.includes('\"' + item.Category + '\"')) {
@@ -84,8 +85,6 @@ function preloadDataToDOM() {
 
 // Add event listeners to each filter
 function initializeEventListeners() {
-
-  // TODO: map pin event listeners
 
   // Radius A filter
   var radiusA = document.getElementById('radius-a');
@@ -163,17 +162,16 @@ function visualize(data) {
     .on('mouseover', function(d) {   
       div.transition()    
         .duration(400)    
-        .style('opacity', .9);    
+        .style('opacity', 0.9);    
       div.html(createTooltip(d))  
         .style('left', (d3.event.pageX) + 'px')   
         .style('top', (d3.event.pageY) + 'px');  
     })          
-    .on('mouseout', function(d) {   
+    .on('mouseout', function() {   
       div.transition()    
         .duration(400)
-        .style('opacity', 0)
+        .style('opacity', 0);
     }); 
-    // .call(drag)
 }
 
 function createTooltip(point) {
@@ -195,7 +193,7 @@ function toProperCase(string) {
 }
 
 // Custom function to convert date in format YYYY-MM-DDT00:00:00 to string
-// Passing in the date string from the data set into the Date constructor was off by one day
+// Passing in the date string from the data set into the Date constructor was off by one day due to time zone
 function toDateObject(datestring) {
   var year = datestring.slice(0, 4);
   var month = parseInt(datestring.slice(5, 7)) - 1;
@@ -203,28 +201,58 @@ function toDateObject(datestring) {
   return new Date(year, month, day);
 }
 
-// Define drag behavior
-// var drag = d3.behavior.drag()
-//     .origin(function(d) { return d; })
-//     .on('dragstart', dragstarted)
-//     .on('drag', dragged)
-//     .on('dragend', dragended);
+/* ============ MAP PINS ============ */
+var pinA = [{Location: [-122.433701, 37.767683]}]; // pin A start location
+var pinB = [{Location: [-122.423701, 37.767683]}]; // pin B start location
+var pinSize = 40;
 
-// function dragstarted(d) {
-//   d3.event.sourceEvent.stopPropagation();
-//   d3.select(this).classed('circle--drag', true);
-// }
+//Define drag behavior
+var drag = d3.behavior.drag()
+    .origin(function(d) { return d; })
+    .on('dragstart', dragstarted)
+    .on('drag', dragged)
+    .on('dragend', dragended);
 
-// function dragged(d) {
-//   d3.select(this)
-//   .attr('cx', function(d) {
-//     return d3.event.sourceEvent.offsetX;
-//   })
-//   .attr('cy', function(d) {
-//     return d3.event.sourceEvent.offsetY;
-//   });
-// }
+function dragstarted() {
+  d3.event.sourceEvent.stopPropagation();
+}
 
-// function dragended(d) {
-//   d3.select(this).classed('circle--drag', false);
-// }
+function dragged() {
+  d3.select(this)
+  .attr('transform', function() {
+    var lat = d3.event.sourceEvent.offsetX - pinSize / 2;
+    var long = d3.event.sourceEvent.offsetY - pinSize / 2;
+    return 'translate(' + [lat, long] + ')';
+  });
+}
+
+function dragended() {
+  console.log('update filter');
+}
+
+// Setup map pins
+function addPinsToDOM() {
+  svg.selectAll('pin')
+    .data(pinA).enter()
+    .append('image')
+    .attr('width', pinSize)
+    .attr('height', pinSize)
+    .attr('class', 'pin')
+    .attr('xlink:href', 'img/pin-a.png')
+    .attr('transform', function(d) {
+      return 'translate(' + projection(d.Location) + ')';
+    })
+    .call(drag);
+
+  svg.selectAll('pin')
+    .data(pinB).enter()
+    .append('image')
+    .attr('width', pinSize)
+    .attr('height', pinSize)
+    .attr('class', 'pin')
+    .attr('xlink:href', 'img/pin-b.png')
+    .attr('transform', function(d) {
+      return 'translate(' + projection(d.Location) + ')';
+    })
+    .call(drag);
+}
