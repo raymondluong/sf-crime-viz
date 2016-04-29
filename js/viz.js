@@ -21,6 +21,11 @@ svg.append('image')
   .attr('height', height)
   .attr('xlink:href', 'img/sf-map.svg');
 
+// Tooltip
+var div = d3.select('body').append('div') 
+    .attr('class', 'tooltip')       
+    .style('opacity', 0);
+
 
 /* ============ PROCESS DATA TO VISUALIZE ============ */
 var categories = [];
@@ -50,13 +55,13 @@ function processRawData(data) {
     // Need commas to preserve uniquess and get around jQuery data attribute
 
     // Only push unique categories
-    if (!categories.includes("\"" + item.Category + "\"")) {
-      categories.push("\"" + item.Category + "\"");
+    if (!categories.includes('\"' + item.Category + '\"')) {
+      categories.push('\"' + item.Category + '\"');
     }
 
     // Only push unique resolutions
-    if (!resolutions.includes("\"" + item.Resolution + "\"")) {
-      resolutions.push("\"" + item.Resolution + "\"");
+    if (!resolutions.includes('\"' + item.Resolution + '\"')) {
+      resolutions.push('\"' + item.Resolution + '\"');
     }
   });
 }
@@ -65,12 +70,12 @@ function processRawData(data) {
 function preloadDataToDOM() {
   var categoriesFilter = document.getElementById('select-category');
   categories.forEach(function(category) {
-    categoriesFilter.innerHTML += "<option value=" + category + ">" + category.replace(/"/g, '') + "</option>";
+    categoriesFilter.innerHTML += '<option value=' + category + '>' + category.replace(/"/g, '') + '</option>';
   });
 
   var resolutionsFilter = document.getElementById('select-resolution');
   resolutions.forEach(function(resolution) {
-    resolutionsFilter.innerHTML += "<option value=" + resolution + ">" + resolution.replace(/"/g, '') + "</option>";
+    resolutionsFilter.innerHTML += '<option value=' + resolution + '>' + resolution.replace(/"/g, '') + '</option>';
   });
 
   // Initialize event listeners only after data has been loaded
@@ -154,8 +159,48 @@ function visualize(data) {
       return projection(d.Location)[1];
     })
     .attr('r', '5px')
-    .attr('class', 'circle'); 
+    .attr('class', 'circle')
+    .on('mouseover', function(d) {   
+      div.transition()    
+        .duration(400)    
+        .style('opacity', .9);    
+      div.html(createTooltip(d))  
+        .style('left', (d3.event.pageX) + 'px')   
+        .style('top', (d3.event.pageY) + 'px');  
+    })          
+    .on('mouseout', function(d) {   
+      div.transition()    
+        .duration(400)
+        .style('opacity', 0)
+    }); 
     // .call(drag)
+}
+
+function createTooltip(point) {
+  var html = '';
+  html += '<h1>' + toProperCase(point.Description) + '</h1>';
+  html += '<br>Category: ' + toProperCase(point.Category);
+  html += '<br>Resolution: ' + toProperCase(point.Resolution);
+  html += '<br>Date: ' + toDateObject(point.Date).toDateString();
+  html += '<br>Time: ' + point.Time;
+  return html;
+}
+
+// Convert a string to proper capitalization
+// Source: http://stackoverflow.com/questions/196972/convert-string-to-title-case-with-javascript
+function toProperCase(string) {
+  return string.replace(/\w\S*/g, function(txt){
+    return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
+  });
+}
+
+// Custom function to convert date in format YYYY-MM-DDT00:00:00 to string
+// Passing in the date string from the data set into the Date constructor was off by one day
+function toDateObject(datestring) {
+  var year = datestring.slice(0, 4);
+  var month = parseInt(datestring.slice(5, 7)) - 1;
+  var day = datestring.slice(8, 10);
+  return new Date(year, month, day);
 }
 
 // Define drag behavior
