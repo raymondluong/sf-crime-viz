@@ -13,7 +13,10 @@ var projection = d3.geo.mercator()
 // Add svg element to the DOM
 var svg = d3.select('#viz-container').append('svg')
   .attr('width', width)
-  .attr('height', height);
+  .attr('height', height)
+  .attr('id', 'viz-svg');
+
+var vizRect = document.getElementById('viz-svg').getBoundingClientRect();
 
 // Add svg map
 svg.append('image')
@@ -202,9 +205,11 @@ function toDateObject(datestring) {
 }
 
 /* ============ MAP PINS ============ */
-var pinA = [{Location: [-122.433701, 37.767683]}]; // pin A start location
-var pinB = [{Location: [-122.423701, 37.767683]}]; // pin B start location
+var pinAData = [{Location: [-122.433701, 37.767683], name: 'A'}]; // pin A start location
+var pinBData = [{Location: [-122.423701, 37.767683], name: 'B'}]; // pin B start location
 var pinSize = 40;
+var pinA, pinB, radiusA, radiusB;
+
 
 //Define drag behavior
 var drag = d3.behavior.drag()
@@ -220,39 +225,93 @@ function dragstarted() {
 function dragged() {
   d3.select(this)
   .attr('transform', function() {
-    var lat = d3.event.sourceEvent.offsetX - pinSize / 2;
-    var long = d3.event.sourceEvent.offsetY - pinSize / 2;
-    return 'translate(' + [lat, long] + ')';
+    var x = d3.event.sourceEvent.offsetX - pinSize / 2;
+    var y = d3.event.sourceEvent.offsetY - pinSize / 2;
+    return 'translate(' + [x, y] + ')';
   });
 }
 
-function dragended() {
+function dragended(d) {
   console.log('update filter');
+
+  var lat = d3.event.sourceEvent.offsetX + pinSize / 2;
+  var long = d3.event.sourceEvent.offsetY + pinSize / 2;
+
+  var pin = d.name === 'A' ? pinA : pinB;
+  var radius = d.name === 'A' ? radiusA : radiusB;
+  var pinRect = pin.getBoundingClientRect();
+
+  radius.setAttribute('cx', pinRect.left - vizRect.left + pinSize / 2);
+  radius.setAttribute('cy', pinRect.top - vizRect.top + pinSize);  
+
+
 }
 
 // Setup map pins
 function addPinsToDOM() {
+
+  svg.selectAll('radius')
+    .data(pinAData).enter()
+    .append('circle')
+    .attr('cx', function(d) { 
+      console.log(projection(d.Location));
+      return projection(d.Location)[0]; 
+    })
+    .attr('cy', function(d) {
+      return projection(d.Location)[1];
+    })
+    .attr('r', '30px')
+    .attr('class', 'radius')
+    .attr('id', 'radius-a-circle');
+
+  svg.selectAll('radius')
+    .data(pinBData).enter()
+    .append('circle')
+    .attr('cx', function(d) { 
+      console.log(projection(d.Location));
+      return projection(d.Location)[0]; 
+    })
+    .attr('cy', function(d) {
+      return projection(d.Location)[1];
+    })
+    .attr('r', '30px')
+    .attr('class', 'radius')
+    .attr('id', 'radius-b-circle');
+
   svg.selectAll('pin')
-    .data(pinA).enter()
+    .data(pinAData).enter()
     .append('image')
     .attr('width', pinSize)
     .attr('height', pinSize)
     .attr('class', 'pin')
+    .attr('id', 'pin-a')
     .attr('xlink:href', 'img/pin-a.png')
     .attr('transform', function(d) {
-      return 'translate(' + projection(d.Location) + ')';
+      var coords = projection(d.Location);
+      coords[0] -= pinSize / 2;
+      coords[1] -= pinSize;
+      return 'translate(' + coords + ')';
     })
     .call(drag);
 
   svg.selectAll('pin')
-    .data(pinB).enter()
+    .data(pinBData).enter()
     .append('image')
     .attr('width', pinSize)
     .attr('height', pinSize)
     .attr('class', 'pin')
+    .attr('id', 'pin-b')
     .attr('xlink:href', 'img/pin-b.png')
     .attr('transform', function(d) {
-      return 'translate(' + projection(d.Location) + ')';
+      var coords = projection(d.Location);
+      coords[0] -= pinSize / 2;
+      coords[1] -= pinSize;
+      return 'translate(' + coords + ')';
     })
     .call(drag);
+
+  pinA = document.getElementById('pin-a');
+  pinB = document.getElementById('pin-b');
+  radiusA = document.getElementById('radius-a-circle');
+  radiusB = document.getElementById('radius-b-circle');
 }
