@@ -254,7 +254,6 @@ function addPinsToDOM() {
     .data(pinAData).enter()
     .append('circle')
     .attr('cx', function(d) { 
-      console.log(projection(d.Location));
       return projection(d.Location)[0]; 
     })
     .attr('cy', function(d) {
@@ -268,7 +267,6 @@ function addPinsToDOM() {
     .data(pinBData).enter()
     .append('circle')
     .attr('cx', function(d) { 
-      console.log(projection(d.Location));
       return projection(d.Location)[0]; 
     })
     .attr('cy', function(d) {
