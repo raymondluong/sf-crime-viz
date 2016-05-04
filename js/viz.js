@@ -41,8 +41,8 @@
     radiusB: 1,
     locationA: [-122.458220811697, 37.7633123961354],
     locationB: [-122.43355503388, 37.783240028248],
-    categories: ["ARSON", "ASSAULT", "BRIBERY", "BURGLARY", "DISORDERLY CONDUCT", "DRIVING UNDER THE INFLUENCE", "DRUG/NARCOTIC", "DRUNKENNESS", "EMBEZZLEMENT", "EXTORTION", "FAMILY OFFENSES", "FORGERY/COUNTERFEITING", "FRAUD", "GAMBLING", "KIDNAPPING", "LARCENY/THEFT", "LIQUOR LAWS", "LOITERING", "MISSING PERSON", "NON-CRIMINAL", "OTHER OFFENSES", "PROSTITUTION", "ROBBERY", "RUNAWAY", "SECONDARY CODES", "SEX OFFENSES, FORCIBLE", "SEX OFFENSES, NON FORCIBLE", "STOLEN PROPERTY", "SUICIDE", "SUSPICIOUS OCC", "TRESPASS", "VANDALISM", "VEHICLE THEFT", "WARRANTS", "WEAPON LAWS"],
-    resolutions: ["ARREST, BOOKED", "ARREST, CITED", "CLEARED-CONTACT JUVENILE FOR MORE INFO", "COMPLAINANT REFUSES TO PROSECUTE", "EXCEPTIONAL CLEARANCE", "JUVENILE BOOKED", "LOCATED", "NONE", "NOT PROSECUTED", "PSYCHOPATHIC CASE", "UNFOUNDED"],
+    categories: [],
+    resolutions: [],
     timeFrom: '00:00',
     timeTo: '23:59'
   };
@@ -53,56 +53,17 @@
   // Fetch data
   d3.json('data/scpd_incidents.json', function(error, data) {
     if (error) return console.error(error);
-    console.log(data);
-    data = data.data.slice(0); // temporary to make developing faster
-    // processRawData(data);
-    // preloadDataToDOM();
-    
-    addPinsToDOM(); // Add radius before data points so they appear below
+    data = data.data.slice(0); // temporary to make developing faster    
+    addPinsToDOM();
     initializeEventListeners();
     allData = data;
     visibleData = allData.filter(filterData);
     visualize();
-    // addPinsToDOM(); // Add pins after data points so they appear on top (z-index doesn't affect svg)
   });
 
-  // Get unique categories and districts from data
-  function processRawData(data) {
-    data.forEach(function(item) {
-      // Need quotes to preserve uniquess and get around jQuery data attribute
-
-      // Only push unique categories
-      if (!categories.includes('\"' + item.Category + '\"')) {
-        categories.push('\"' + item.Category + '\"');
-      }
-
-      // Only push unique resolutions
-      if (!resolutions.includes('\"' + item.Resolution + '\"')) {
-        resolutions.push('\"' + item.Resolution + '\"');
-      }
-    });
-  }
-
-  // Add each unique category to multi select form, then render multi select
-  function preloadDataToDOM() {
-    var categoriesFilter = document.getElementById('select-category');
-    categories.sort().forEach(function(category) {
-      categoriesFilter.innerHTML += '<option value=' + category + '>' + category.replace(/"/g, '') + '</option>';
-    });
-
-    var resolutionsFilter = document.getElementById('select-resolution');
-    resolutions.sort().forEach(function(resolution) {
-      resolutionsFilter.innerHTML += '<option value=' + resolution + '>' + resolution.replace(/"/g, '') + '</option>';
-    });
-
-    // Initialize event listeners only after data has been loaded
-    initializeEventListeners();
-  }
-
   function updateVisibleData() {
-    // console.log("update");
+    svg.selectAll('.circle').data(visibleData).remove();
     visibleData = allData.filter(filterData);
-    // console.log(visibleData);
     visualize();
   }
 
@@ -134,41 +95,59 @@
       selectionHeader: 'Viewing',
       selectableHeader: 'All',
       afterSelect: function(value){
-        // console.log('added ' + value + ' to category multiselect');
-        filters.categories.push(value[0]);
+        value.forEach(function(item) {
+          filters.categories.push(item);
+        });
         // console.log(filters.categories);
         updateVisibleData();
       },
       afterDeselect: function(value){
-        // console.log('removed ' + value + ' from category multiselect');
         filters.categories.splice(filters.categories.indexOf(value[0]), 1);
         // console.log(filters.categories);
         updateVisibleData();
       }
     });
+
+    $('#select-category-all').click(function() {
+      $('#select-category').multiSelect('select_all');
+    });
+
+    $('#select-category-none').click(function() {
+      filters.categories = [];
+      $('#select-category').multiSelect('deselect_all');
+    });
+
     $('#select-category').multiSelect('select_all');
-    filters.categories = filters.categories.slice(1); //hacky, fix this!
 
     // Multi select settings for resolution filter
     $('#select-resolution').multiSelect({
       selectionHeader: 'Viewing',
       selectableHeader: 'All',
       afterSelect: function(value){
-        // console.log('added ' + value + 'to resolution multiselect');
-        filters.resolutions.push(value[0]);
+        value.forEach(function(item) {
+          filters.resolutions.push(item);
+        });
         // console.log(filters.resolutions);
         updateVisibleData();
       },
       afterDeselect: function(value){
-        // console.log('removed ' + value + 'from resolution multiselect');
         filters.resolutions.splice(filters.resolutions.indexOf(value[0]), 1);
         // console.log(filters.resolutions);
         updateVisibleData();
       }
     });
 
+    $('#select-resolution-all').click(function() {
+      $('#select-resolution').multiSelect('select_all');
+    });
+
+    $('#select-resolution-none').click(function() {
+      filters.resolutions = [];
+      $('#select-resolution').multiSelect('deselect_all');
+    });
+
     $('#select-resolution').multiSelect('select_all');
-    filters.resolutions = filters.resolutions.slice(1);
+    // filters.resolutions = filters.resolutions.slice(1);
 
     // Time filter
     var timeFrom = document.getElementById('time-from');
@@ -181,15 +160,8 @@
       filters.timeTo = timeTo.value;
     })
 
-    var submitButton = document.getElementById('submit');
+    var submitButton = document.getElementById('submit-time');
     submitButton.addEventListener('click', updateVisibleData);
-
-    var clearButton = document.getElementById('clear');
-    clearButton.addEventListener('click', function() {
-      svg.selectAll('.circle')
-      .data(visibleData).remove();
-
-    })
   }
 
   function filterData(d) {
@@ -305,9 +277,8 @@
   var pinDrag = d3.behavior.drag()
       .origin(function(d) { return d; })
       .on('dragstart', pinDragStart)
-      .on('drag', pinDragDuring)
-      .on('dragend', pinDragEnd);
-
+      .on('drag', pinDragDuring);
+      
   function pinDragStart() {
     d3.event.sourceEvent.stopPropagation();
   }
@@ -330,10 +301,6 @@
     });
 
     updateVisibleData();
-  }
-
-  function pinDragEnd(d) {
-
   }
 
   // Setup map pins
@@ -387,7 +354,5 @@
     radiusA = document.getElementById('radius-a-circle');
     radiusB = document.getElementById('radius-b-circle');
   }
-
-
 
 })();
