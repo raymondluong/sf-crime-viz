@@ -49,7 +49,7 @@
   var allData = [];
   var visibleData = [];
   var pxPerMile = 72;
-  var useDynamicFiltering = true;
+  var useDynamicFiltering = false;
 
   // Fetch data
   d3.json('data/scpd_incidents.json', function(error, data) {
@@ -78,6 +78,7 @@
       useDynamicFiltering = toggle.checked;
       if (toggle.checked) {
         applyButton.style.display = 'none';
+        updateVisibleData();
       } else {
         applyButton.style.display = 'block';
       }
