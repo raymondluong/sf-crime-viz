@@ -33,6 +33,7 @@ main {
   min-height: 700px;
   min-width: 400px;
   margin-right: 10px;
+  position: relative;
 }
 
 .slider-container {
@@ -42,7 +43,7 @@ main {
 #slider-b {
   /*margin-left: 50px;*/
   position: absolute;
-  left: 225px;
+  left: 200px;
 }
 
 .filter-panel{
@@ -59,17 +60,46 @@ main {
   margin-right: 30px;
 }
 
+.button {
+  display: block;
+  padding: 10px;
+  background: #2980B9;
+  color: white;
+  text-align: center;
+  box-shadow: 0px 3px 2px #888888;
+}
+
+.button:hover {
+  cursor: pointer;
+}
+
+.button:active {
+  position: relative;
+  box-shadow: 0px 1px 2px #888888;
+  top: 2px;
+}
+
 /* Visualization styling */
 .circle {
-  fill: #B0C4DE;
+
+  fill: transparent;
   stroke: #4682B4;
-  stroke-width: 1.5px;
+  stroke-width: 1px;
+}
+
+.circle:hover {
+  /*fill: #B0C4DE;*/
+  fill: #4682B4;
 }
 
 .radius {
   fill: rgba(176, 196, 222, .5);
-  stroke: #4682B4;
-  stroke-width: 1.5px;
+  /*stroke: #4682B4;*/
+  /*stroke-width: 1.5px;*/
+}
+
+.pin-group {
+  cursor: move;
 }
 
 .tooltip { 
