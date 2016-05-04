@@ -49,6 +49,7 @@
   var allData = [];
   var visibleData = [];
   var pxPerMile = 72;
+  var useDynamicFiltering = true;
 
   // Fetch data
   d3.json('data/scpd_incidents.json', function(error, data) {
@@ -70,6 +71,18 @@
   // Add event listeners to each filter
   function initializeEventListeners() {
 
+    var toggle = document.getElementById('dynamic-filtering');
+    var applyButton = document.getElementById('apply-filter');
+    toggle.addEventListener('change', function() {
+      // console.log(toggle.checked);
+      useDynamicFiltering = toggle.checked;
+      if (toggle.checked) {
+        applyButton.style.display = 'none';
+      } else {
+        applyButton.style.display = 'block';
+      }
+    });
+
     // Radius A filter
     var radiusA = document.getElementById('radius-a');
     var radiusACircle = document.getElementById('radius-a-circle')
@@ -77,7 +90,7 @@
       // console.log('radius a new value is ' + this.value);
       filters.radiusA = radiusA.value;
       radiusACircle.setAttribute('r', radiusA.value * pxPerMile);
-      updateVisibleData();
+      if (useDynamicFiltering) updateVisibleData();
     });
 
     // Radius B filter
@@ -87,7 +100,7 @@
       // console.log('radius b new value is ' + this.value);
       filters.radiusB = radiusB.value;
       radiusBCircle.setAttribute('r', radiusB.value * pxPerMile);
-      updateVisibleData();
+      if (useDynamicFiltering) updateVisibleData();
     });
 
     // Multi select settings for category filter
@@ -99,12 +112,12 @@
           filters.categories.push(item);
         });
         // console.log(filters.categories);
-        updateVisibleData();
+        if (useDynamicFiltering) updateVisibleData();
       },
       afterDeselect: function(value){
         filters.categories.splice(filters.categories.indexOf(value[0]), 1);
         // console.log(filters.categories);
-        updateVisibleData();
+        if (useDynamicFiltering) updateVisibleData();
       }
     });
 
@@ -128,12 +141,12 @@
           filters.resolutions.push(item);
         });
         // console.log(filters.resolutions);
-        updateVisibleData();
+        if (useDynamicFiltering) updateVisibleData();
       },
       afterDeselect: function(value){
         filters.resolutions.splice(filters.resolutions.indexOf(value[0]), 1);
         // console.log(filters.resolutions);
-        updateVisibleData();
+        if (useDynamicFiltering) updateVisibleData();
       }
     });
 
@@ -162,6 +175,9 @@
 
     var submitButton = document.getElementById('submit-time');
     submitButton.addEventListener('click', updateVisibleData);
+
+    var applyFilterButton = document.getElementById('apply-filter');
+    applyFilterButton.addEventListener('click', updateVisibleData);
   }
 
   function filterData(d) {
@@ -300,7 +316,7 @@
       return 'translate(' + [pinData[i].xy] + ')';
     });
 
-    updateVisibleData();
+    if (useDynamicFiltering) updateVisibleData();
   }
 
   // Setup map pins

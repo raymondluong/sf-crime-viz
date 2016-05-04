@@ -23,6 +23,9 @@
 
     <div id="filter-container">
 
+      <input type="checkbox" id="dynamic-filtering"><label>Enable dynamic updating</label>
+      <div class="button" id="apply-filter">Apply Filters</div>
+
       <div class="filter-panel" id="filter-location">
 
         <h4>Location</h4>
@@ -126,7 +129,7 @@
         From: <input type="time" value = "00:00" min="00:00" id="time-from">
         to: <input type="time" value="23:59" max="23:59" id="time-to">
 
-        <div class="button" id="submit-time">Apply Time Filter</div>
+        <div class="button button--small" id="submit-time">Apply Time Filter</div>
       
       </div>
 
@@ -143,5 +146,5 @@
 
   <script src="js/viz.js"></script>
   <script src="js/jquery.multi-select.js"></script>
-  
+
 </body>
