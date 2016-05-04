@@ -41,6 +41,13 @@
             <output name="amount" for="radius-b">1</output> mi
           </form>
         </div>
+        <div class="slider-container" id="slider-b">
+          <span>Pin B Radius</span>
+          <form oninput="amount.value=rangeInput.value">
+            <input type="range" id="radius-b" name="rangeInput" min="0" max="5" value="1" step=".1">
+            <output name="amount" for="radius-b">1</output> mi
+          </form>
+        </div>
       </div>
 
       <div class="filter-panel" id="filter-category">
@@ -111,6 +118,7 @@
       </div>
 
       <div class="button" id="submit">Apply Filters</div>
+      <div class="button" id="clear">Clear</div>
 
     </div>
 

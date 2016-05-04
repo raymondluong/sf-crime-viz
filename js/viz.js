@@ -183,6 +183,13 @@
 
     var submitButton = document.getElementById('submit');
     submitButton.addEventListener('click', updateVisibleData);
+
+    var clearButton = document.getElementById('clear');
+    clearButton.addEventListener('click', function() {
+      svg.selectAll('.circle')
+      .data(visibleData).remove();
+
+    })
   }
 
   function filterData(d) {
