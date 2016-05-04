@@ -1,8 +1,7 @@
 <!DOCTYPE>
 <html>
 <head>
-  <title>CS448B Assignment 3</title>
-  <!-- <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.4/themes/smoothness/jquery-ui.css"> -->
+  <title>San Francisco Crime Incident Interactive Visualization</title>
   <link href="css/multi-select.css" media="screen" rel="stylesheet" type="text/css" />
   <link href="css/style.css" media="screen" rel="stylesheet" type="text/css" />
   <link href='https://fonts.googleapis.com/css?family=Lato:400,700,300' rel='stylesheet' type='text/css'>
@@ -10,7 +9,6 @@
 <body>
   <!-- Import jQuery -->
   <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.js"></script>
-  <!-- <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.4/jquery-ui.min.js"></script> -->
 
   <!-- Import D3 -->
   <script src="https://d3js.org/d3.v3.min.js" charset="utf-8"></script>
@@ -25,43 +23,116 @@
 
     <div id="filter-container">
 
-      <h3>Dynamic Query Filters</h3>
+      <input type="checkbox" id="dynamic-filtering"><label>Enable dynamic updating</label>
+      <div class="button" id="apply-filter">Apply Filters</div>
 
       <div class="filter-panel" id="filter-location">
+
         <h4>Location</h4>
+
         <div class="slider-container" id="slider-a">
           <span>Pin A Radius</span>
           <form oninput="amount.value=rangeInput.value">
-            <input type="range" id="radius-a" name="rangeInput" min="0" max="100" value="0">
-            <output name="amount" for="radius-b">0</output>
+            <input type="range" id="radius-a" name="rangeInput" min="0" max="5" value="1" step=".1">
+            <output name="amount" for="radius-a">1</output> mi
           </form>
         </div>
+
         <div class="slider-container" id="slider-b">
           <span>Pin B Radius</span>
           <form oninput="amount.value=rangeInput.value">
-            <input type="range" id="radius-b" name="rangeInput" min="0" max="100" value="0">
-            <output name="amount" for="radius-b">0</output>
+            <input type="range" id="radius-b" name="rangeInput" min="0" max="5" value="1" step=".1">
+            <output name="amount" for="radius-b">1</output> mi
           </form>
         </div>
+
       </div>
 
-      <div class="filter-panel" id="filter-category">
+      <div class="filter-panel filter-multi" id="filter-category">
+
         <h4>Category</h4>
-        <select multiple="multiple" id="select-category"></select>
+
+        <span>
+          <a id="select-category-all">Select All</a> |
+          <a id="select-category-none">Deselect All</a>
+        </span>
+
+        <select multiple="multiple" id="select-category">
+          <option value="ARSON">ARSON</option>
+          <option value="ASSAULT">ASSAULT</option>
+          <option value="BRIBERY">BRIBERY</option>
+          <option value="BURGLARY">BURGLARY</option>
+          <option value="DISORDERLY CONDUCT">DISORDERLY CONDUCT</option>
+          <option value="DRIVING UNDER THE INFLUENCE">DRIVING UNDER THE INFLUENCE</option>
+          <option value="DRUG/NARCOTIC">DRUG/NARCOTIC</option>
+          <option value="DRUNKENNESS">DRUNKENNESS</option>
+          <option value="EMBEZZLEMENT">EMBEZZLEMENT</option>
+          <option value="EXTORTION">EXTORTION</option>
+          <option value="FAMILY OFFENSES">FAMILY OFFENSES</option>
+          <option value="FORGERY/COUNTERFEITING">FORGERY/COUNTERFEITING</option>
+          <option value="FRAUD">FRAUD</option>
+          <option value="GAMBLING">GAMBLING</option>
+          <option value="KIDNAPPING">KIDNAPPING</option>
+          <option value="LARCENY/THEFT">LARCENY/THEFT</option>
+          <option value="LIQUOR LAWS">LIQUOR LAWS</option>
+          <option value="LOITERING">LOITERING</option>
+          <option value="MISSING PERSON">MISSING PERSON</option>
+          <option value="NON-CRIMINAL">NON-CRIMINAL</option>
+          <option value="OTHER OFFENSES">OTHER OFFENSES</option>
+          <option value="PROSTITUTION">PROSTITUTION</option>
+          <option value="ROBBERY">ROBBERY</option>
+          <option value="RUNAWAY">RUNAWAY</option>
+          <option value="SECONDARY CODES">SECONDARY CODES</option>
+          <option value="SEX OFFENSES, FORCIBLE">SEX OFFENSES, FORCIBLE</option>
+          <option value="SEX OFFENSES, NON FORCIBLE">SEX OFFENSES, NON FORCIBLE</option>
+          <option value="STOLEN PROPERTY">STOLEN PROPERTY</option>
+          <option value="SUICIDE">SUICIDE</option>
+          <option value="SUSPICIOUS OCC">SUSPICIOUS OCC</option>
+          <option value="TRESPASS">TRESPASS</option>
+          <option value="VANDALISM">VANDALISM</option>
+          <option value="VEHICLE THEFT">VEHICLE THEFT</option>
+          <option value="WARRANTS">WARRANTS</option>
+          <option value="WEAPON LAWS">WEAPON LAWS</option>
+        </select>
+
       </div>
 
-      <div class="filter-panel" id="filter-resolution">
+      <div class="filter-panel filter-multi" id="filter-resolution">
+
         <h4>Resolution</h4>
-        <select multiple="multiple" id="select-resolution"></select>
+
+        <span>
+          <a id="select-resolution-all">Select All</a> |
+          <a id="select-resolution-none">Deselect All</a>
+        </span>
+
+        <select multiple="multiple" id="select-resolution">
+          <option value="ARREST, BOOKED">ARREST, BOOKED</option>
+          <option value="ARREST, CITED">ARREST, CITED</option>
+          <option value="CLEARED-CONTACT JUVENILE FOR MORE INFO">CLEARED-CONTACT JUVENILE FOR MORE INFO</option>
+          <option value="COMPLAINANT REFUSES TO PROSECUTE">COMPLAINANT REFUSES TO PROSECUTE</option>
+          <option value="EXCEPTIONAL CLEARANCE">EXCEPTIONAL CLEARANCE</option>
+          <option value="JUVENILE BOOKED">JUVENILE BOOKED</option>
+          <option value="LOCATED">LOCATED</option>
+          <option value="NONE">NONE</option>
+          <option value="NOT PROSECUTED">NOT PROSECUTED</option>
+          <option value="PSYCHOPATHIC CASE">PSYCHOPATHIC CASE</option>
+          <option value="UNFOUNDED">UNFOUNDED</option>
+        </select>
+
       </div>
 
       <div class="filter-panel" id="filter-time">
+
         <h4>Time</h4>
+
         From: <input type="time" value = "00:00" min="00:00" id="time-from">
         to: <input type="time" value="23:59" max="23:59" id="time-to">
-        <!-- error message will be needed here for valid range -->
-        <button id="time-submit">Apply Time Filter</button>
+
+        <div class="button button--small" id="submit-time">Apply Time Filter</div>
+      
       </div>
+
     </div>
 
     <div id="viz-container"></div>
@@ -69,13 +140,11 @@
   </main>
 
   <footer>
-    <p>Data points from April 1 - 15, 2016</p>
+    <p>Data points for incidents reported from April 1  to 15, 2016</p>
     <p>Developed by Sukhi Gulati and Raymond Luong for CS448B at Stanford University</p>
   </footer>
 
   <script src="js/viz.js"></script>
   <script src="js/jquery.multi-select.js"></script>
-  <script>
 
-  </script>
 </body>
